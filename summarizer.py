@@ -97,20 +97,16 @@ def generate_summary(
     try:
         from openai import AzureOpenAI
     except ImportError:
-        print("Missing dependency: pip install openai", file=sys.stderr)
-        sys.exit(1)
+        raise RuntimeError("Missing dependency: pip install openai")
 
     if not endpoint:
-        print("Missing AZURE_OPENAI_ENDPOINT. Set it in the environment or pass --endpoint.", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError("Missing AZURE_OPENAI_ENDPOINT. Set it in the environment or pass --endpoint.")
 
     if not api_key:
-        print("Missing AZURE_OPENAI_API_KEY. Set it in the environment or a .env file.", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError("Missing AZURE_OPENAI_API_KEY. Set it in the environment or a .env file.")
 
     if not deployment:
-        print("Missing AZURE_OPENAI_DEPLOYMENT. Set it in the environment or pass --deployment.", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError("Missing AZURE_OPENAI_DEPLOYMENT. Set it in the environment or pass --deployment.")
 
     endpoint = normalize_endpoint(endpoint)
     prompt = build_prompt(transcript)
@@ -128,8 +124,7 @@ def generate_summary(
 
     text = extract_text(response)
     if not text:
-        print("No text returned from model.", file=sys.stderr)
-        sys.exit(1)
+        raise RuntimeError("No text returned from model.")
 
     parsed = try_parse_json(text)
     if parsed is not None:
